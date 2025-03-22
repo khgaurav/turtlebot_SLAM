@@ -1,0 +1,27 @@
+<launch>
+  <!-- Navigation stuff (move_base) -->
+  <include file="$(find turtlebot_bringup)/launch/minimal.launch"/>
+  <include file="$(find realsense2_camera)/launch/rs_rgbd.launch"/>
+  <node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depth_to_laser">
+    <remap from="image" to="/camera/depth/image_rect_raw"/>
+    <remap from="camera_info" to="/camera/depth/camera_info"/>
+    <param name="output_frame_id" value="camera_depth_frame"/>
+    <param name="scan_height" value="10"/>  <!-- Number of rows to average -->
+    <!-- <param name="min_height" value="0.2"/> -->
+    <!-- <param name="max_height" value="0.8"/> -->
+    <!-- <param name="range_min" value="0.1"/>   Min range per D435i specs [2] -->
+    <param name="range_max" value="4"/>   <!-- Max ideal range [2] -->
+    <param name="scan_time" value="0.033"/> <!-- ~30 Hz -->
+    <param name="angle_min" value="-0.75"/> <!-- Adjusted for 87° FOV [7] -->
+    <param name="angle_max" value="0.75"/>
+  </node>
+
+  <node pkg="tf" type="static_transform_publisher" name="map_to_odom_broadcaster" args="0 0 0 0 0 0 map odom 100" />
+  <!-- Mapping -->
+  <!-- <group ns="rtabmap">
+
+    <node pkg="tf2_ros" type="static_transform_publisher" name="camera_tf" args="$(arg camera_x) $(arg camera_y) $(arg camera_z) $(arg camera_yaw) $(arg camera_pitch) $(arg camera_roll) base_link camera_link" />
+    
+  </group> -->
+
+</launch>
